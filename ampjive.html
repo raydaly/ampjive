@@ -1,0 +1,307 @@
+
+<html>
+<head>
+<title>AMPjive - AMP HTML Editor based on the original HTMLjive editor from 1996</title>
+</head>
+<body bgcolor="#ffff00">
+<h1>AMPjive Beta</h1>
+<p><b>AMPjive Beta</b>  An <a href="https://www.ampproject.org/">AMP HTML</a> editor written in JavaScript based on the original HTMLjive editor from 1996. <b><i>(Save this page as a file.  Then load it whenever you need an AMP HTML editor.)</i></b></p>
+<hr>
+<form method="post" action="">
+<script language="JavaScript">
+modeindex = 2 // ...0=simple, 1=sample, 2=prompt
+helpon = false  // ...true or false
+function HjReset (form) {                // ...required because RESET does not reset values, just GUI
+              helpon = false
+               modeindex = 2
+               form.TEXT.value = ""
+}
+
+function HTMLtag (buttonname, insertmode, inserttext, tagstart, tagmiddle, tagend, sampletext, sampletext2, helptext) {
+  // ...this fuction defines the object HTMLtag
+  this.buttonname = buttonname
+  this.insertmode = insertmode
+    // ...1=none 2=standard input 3=lists (UL and OL) 4=DL list 5=anchor
+  this.inserttext = inserttext  // ...prompt when asking for insert text
+  this.tagstart   = tagstart
+  this.tagmiddle  = tagmiddle
+  this.tagend     = tagend
+  this.sampletext = sampletext  // ...sample text placed between tags in TextArea
+  this.sampletext2= sampletext2
+  this.helptext   = helptext
+}
+
+jStart = new HTMLtag ("Start", 5, "Enter the document TITLE (e.g., My AMPjive Page)", '<!doctype html><HTML amp lang="en"><HEAD><META charset="utf-8"><TITLE>', '</TITLE><LINK rel="canonical" href="', '" /><META name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1"><STYLE>body {opacity: 0}</STYLE><noscript><STYLE>body {opacity: 1}</STYLE></noscript><SCRIPT async src="https://cdn.ampproject.org/v0.js"><\/SCRIPT></HEAD><BODY>',"My AMPjive Page", "http://raydaly.com/ampjive/","Enter the Title followed by the cononical URL (e.g., http://raydaly.com/ampjive/)" )
+jStart.inserttext2 = "Enter canonical URL  (e.g., https://raydaly.com/ampjive/)"
+
+
+jEnd = new HTMLtag ( "End", "1", "", " </BODY></HTML>", "", "",
+  "", "" ,
+  "This puts in the closing tags when your document is complete." )
+jStrong = new HTMLtag ( "STRONG", "2", "Enter the text with STRONG importance", " <STRONG>", "", "</STRONG>",
+  "This will be strong, usually in bold", "" ,
+  "The text placed between the <STRONG> and the </STRONG> will be STRONG importance" )
+jEm = new HTMLtag ( "EM", "2", "Enter the text to be EMPHASISED", " <EM>", "", "</EM>",
+  "This will be emphasised, usually in italics", "" ,
+  "The text placed between the <EM> and the </EM> will be EMPHASISED" )
+jPre = new HTMLtag ( "PRE", "2", "Enter the text to be PREformatted", " <PRE>", "", "</PRE>",
+  "This will be PREformatted", "" ,
+  "The text placed between the <PRE> and the </PRE> will be PREformatted" )
+jPara = new HTMLtag ( "P", "2", "Enter the text for a PARAGRAPH", " <P>", "", "</P>",
+  "Start of a PARAGRAPH that continues until the start of next PARAGRAPH.", "" ,
+  "The text placed after the <P> will be a separate PARAGRAPH until the next <P>" )
+jBreak = new HTMLtag ( "BR", "1", "", " <BR>", "", "",
+  "", "" ,
+  "This tag forces a line break, start of the next line." )
+jRule = new HTMLtag ( "HR", "1", "", " <HR>", "", "",
+  "", "" ,
+  "This tag puts a (horizontal rule) line on the page." )
+jH1 = new HTMLtag ( "H1", "2", "Enter the text for the HEADLINE", " <H1>", "", "</H1>",
+  "This will be a top level HEADLINE", "" ,
+  "The text placed between the <H1> and the </H1> will be the HEADLINE." )
+jH2 = new HTMLtag ( "H2", "2", "Enter the text for the HEADLINE", " <H2>", "", "</H2>",
+  "This will be a next to top level HEADLINE", "" ,
+  "The text placed between the <H2> and the </H2> will be the HEADLINE." )
+jH3 = new HTMLtag ( "H3", "2", "Enter the text for the HEADLINE", " <H3>", "", "</H3>",
+  "This will be a third from top level HEADLINE", "" ,
+  "The text placed between the <H3> and the </H3> will be the HEADLINE." )
+jCenter = new HTMLtag ( "Center", "2", "Enter the text to be CENTERED", " <CENTER>", "", "</CENTER>",
+  "This will be a CENTERED", "" ,
+  "The text placed between the <CENTER> and the </CENTER> will be the CENTERED." )
+jOL = new HTMLtag ( "OL", "3", "Enter FIRST item for (Numbered) ORDERED LIST", " <OL><LI> ", "</LI><LI> ", "</LI></OL>",
+  "This is one item in the numbered list", "Next item in the numbered list" ,
+  "Create an ORDERED LIST by placing multiple items between <LI> and </LI>" )
+jOL.inserttext2 = "Enter NEXT item for ORDERED LIST"
+
+jUL = new HTMLtag ( "UL", "3", "Enter FIRST item for (Plain) UNORDERED LIST", " <UL><LI> ", "</LI><LI> ", "</LI></UL>",
+  "This is one item in the plain list", "Next item in the plain list" ,
+  "Create an ORDERED LIST by placing multiple items between <LI> and </LI>" )
+jUL.inserttext2 = "Enter NEXT item for UNORDERED LIST"
+
+jLI = new HTMLtag ( "LI", "2", "Enter the text for an item in a LIST", " <LI>", "", "</LI>",
+  "This is an item in a LIST", "" ,
+  "The text placed between the <L1> and the </L1> will one item in a LIST.  Requires OL or UL." )
+jDL = new HTMLtag ( "UL", "4", "Enter item for DEFINITION LIST", " <DL><DT>", "</DT> <DD>", " </DD></DL>",
+  "Item to be defined", "Definition of the item" ,
+  "DEFINITION LISTS have two elements: item and definition.  Enter the item." )
+jDL.inserttext2 = "Enter the definition "
+jDL.tagmiddle2='</DD> <DT>'
+
+jDT = new HTMLtag ( "DT", "2", "Enter item for a DEFINITION LIST", " <DT>", "", "</DT>",
+  "This is item for a DEFINITION LIST", "" ,
+  "The text placed between the <DT> and the </DT> will one item in a LIST.  Requires DL." )
+jDD = new HTMLtag ( "DD", "2", "Enter definition for a DEFINITION LIST", " <DD>", "", "</DD>",
+  "This is definition in a DEFINITION LIST", "" ,
+  "The text placed between the <DD> and the </DD> will one item in a LIST.  Requires DL." )
+
+
+
+jImage = new HTMLtag ("Image", 6, "Enter the URL (e.g., sample.png)", ' <AMP-IMG SRC="', '" height="', '"></AMP-IMG>', "http://www.yahoo.com", "44", "Enter the URL followed by the height and width." )
+jImage.inserttext2 = "Enter height in px"
+jImage.sample = "Enter width in px"
+jImage.tagmiddle2='" width="'
+jImage.sampletext3="88"
+
+// jAnimated = new HTMLtag ("Animated", 2, "Enter the URL (e.g., sample.gif)", ' <AMP-ANIM SRC="', "", '"></AMP-ANIM>', "URL to image (e.g. sample.gif)" , "", "Enter the URL for the image (e.g., sample.gif)" )
+
+jAnchor = new HTMLtag ("Anchor", 5, "Enter the URL (e.g., http://www.yahoo.com)", ' <A HREF="', '"> ', '</A>',
+  "http://www.yahoo.com", "Yahoo (description here)",
+  "Enter the URL (e.g., http://www.yahoo.com/index.html) followed by the description." )
+jAnchor.inserttext2 = "Enter description (e.g., Yahoo)"
+
+function About (form) {
+  alert('Beta AMPjive (C) 2015, 1996 Ray Daly www.raydaly.com/AMPjive/')
+}
+function Save (form) {
+  alert('No SAVE function is available.  You must "cut & paste" your document into another application.')
+}
+function HjButton (form,selection) {  // ...all HTML button call this routine
+  if (helpon) {
+    if (confirm(selection.helptext)){
+      addHTML (form,selection)
+    }
+  }else{
+    addHTML (form,selection)
+  }
+}
+
+function addHTML (form,selection) {
+  // ...add text to value ot TextArea
+  cancel = false
+  addText=selection.tagstart
+  if (modeindex==2) { // ...insert mode
+    if (selection.insertmode != 1 ) { // ...if none, skip it all
+      addText += addHTMLinsert (selection, addText, form)
+      if (addText == selection.tagstart) {
+        cancel = true
+      }
+    }
+  }
+  if (modeindex==1) { // ...sample mode
+    addText = addText + selection.sampletext + selection.tagmiddle + selection.sampletext2
+    if (selection.sampletext3){
+      addText = addText + selection.tagmiddle2 + selection.sampletext3
+    }
+  }
+  if (modeindex==0) { // ...simple mode
+    addText += selection.tagmiddle
+  }
+  addText += selection.tagend
+  if (cancel == false) {  // ...put text into TextArea unless canceled
+    form.TEXT.value += addText
+  }
+}
+
+function addHTMLinsert (selection, addText, form) {
+  if (selection.insertmode ==2) {   // ...simple insert (eg.<B>...</B>
+    i = ""
+    i = prompt (selection.inserttext, "")
+    if ((i != null) && (i != "")) {     // ...if input add
+      addText = i
+    }else{
+      addText = ""
+    }
+  }
+  if (selection.insertmode == 3) {  // ...UL and OL lists
+    addText = ""
+    i = ""
+    i = prompt (selection.inserttext, "")
+    if ((i != null) && (i != "")) {
+      addText = i
+      while ((i != null) && (i != "")) {  // ...get next until null
+        i=prompt (selection.inserttext2, "")
+        if ((i != null) && (i != "")) {
+          addText=addText + selection.tagmiddle + i
+        }
+      }
+    }
+  }
+  if (selection.insertmode == 4) {  // ...DL list
+    i= "dummy"
+    j = i
+    addText = ""
+    count = 0
+    while ((i != null) && (i != "") && (j != null) && (j !="")) { // ...get next until null
+      ++count
+      i = ""
+      i = prompt (selection.inserttext, "")
+      // ... used for debugging form.TEXT.value += "-->" + i + "<--"
+      if ((i != null) && (i != "")) {
+        j = ""
+        j=prompt (selection.inserttext2, "")
+        if ((j != null) && (j != "")) {
+          if (count > 1){
+            addText += selection.tagmiddle2
+          }
+          addText=addText +i + selection.tagmiddle + j
+        }
+      }
+    }
+  }
+  if (selection.insertmode == 5) {  // ...Anchor and Start
+    addText = ""
+    i = ""
+    i = prompt (selection.inserttext, "")
+    // ... used for debugging form.TEXT.value += "-->" + i + "<--"
+    if ((i != null) && (i != "")) {
+      j = ""
+      j=prompt (selection.inserttext2, "")
+      if ((j != null) && (j != "")) {
+        addText=i + selection.tagmiddle + j
+      }
+    }
+  }
+  if (selection.insertmode == 6) {  // ...Image
+    addText = ""
+    i = ""
+    i = prompt (selection.inserttext, "")
+    if ((i != null) && (i != "")) {
+      j = ""
+      j=prompt (selection.inserttext2, "")
+      if ((j != null) && (j != "")) {
+        k = ""
+        k=prompt (selection.sample, "")
+        addText=i + selection.tagmiddle + j + selection.tagmiddle2 +k
+      }
+    }
+  }
+  return addText
+}
+
+function preview(form) {
+             msg=open("","DisplayWindow","toolbar=no,directories=no,menubar=yes");
+             msg.document.write(form.TEXT.value);
+}
+<!-- done hiding from old browsers -->
+
+</script>
+<form>
+  <table border="0">
+    <tr>
+      <td align="right"><b>Help status</b>:</td>
+       <td valign="bottom"> <input name="radiohelp" value="true" onclick=" helpon = true" type="radio">
+        ON
+        <input name="radiohelp" value="false" checked="checked" onclick=" helpon = false" type="radio">
+        OFF
+    </tr>
+    <tr>
+      <td align="right"><b>HTML mode</b>: </td><td valign="bottom">
+      <input name="radiomode" value="Copyright 2015, 1996  Ray Daly" onclick=" modeindex = 0 " type="radio">
+        Simple
+        <input name="radiomode" value="Copyright 2015, 1996  Ray Daly" onclick=" modeindex = 1" type="radio">
+        Sample
+        <input name="radiomode" value="Copyright 2015, 1996  Ray Daly" checked="checked" onclick=" modeindex = 2" type="radio">
+        Prompt
+    </tr>
+  </table>
+  <table border="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td align="center"><input value=" Start " onClick="HjButton(this.form,jStart)" type="button">
+          <input value=" End " onClick="HjButton(this.form,jEnd)" type="button"></td>
+        <td align="center"><input value="    Preview    " onClick="preview(this.form)" type="button"></td>
+        <td align="center"><input value="     Save    " onClick="Save(this.form)" type="button"></td>
+        <td align="center"><input value="     About      " onClick="About(this.form)" type="button"></td>
+      </tr>
+      <tr>
+        <td><input value="STRONG" onClick="HjButton(this.form,jStrong)" type="button">
+          <input value="EM" onClick="HjButton(this.form,jEm)" type="button">
+          <input value=" PRE " onClick="HjButton(this.form,jPre)" type="button">
+        </td>
+        <td><input value=" H1 " onClick="HjButton(this.form,jH1)" type="button">
+          <input value=" H2 " onClick="HjButton(this.form,jH2)" type="button">
+          <input value=" H3 " onClick="HjButton(this.form,jH3)" type="button">
+        </td>
+        <td><input value=" OL " onClick="HjButton(this.form,jOL)" type="button">
+          <input value=" UL " onClick="HjButton(this.form,jUL)" type="button">
+          <input value=" LI " onClick="HjButton(this.form,jLI)" type="button">
+        </td>
+        <td><input value=" DL " onClick="HjButton(this.form,jDL)" type="button">
+          <input value=" DT " onClick="HjButton(this.form,jDT)" type="button">
+          <input value=" DD " onClick="HjButton(this.form,jDD)" type="button">
+          <br></td>
+      </tr>
+      <tr>
+        <td align="center"><input value=" P " onClick="HjButton(this.form,jPara)" type="button">
+          <input value=" BR " onClick="HjButton(this.form,jBreak)" type="button">
+          <input value=" HR " onClick="HjButton(this.form,jRule)" type="button">
+        </td>
+        <td align="center"><input value="    Anchor     " onClick="HjButton(this.form,jAnchor)" type="button">
+        </td>
+        <td align="center">
+          <input value=" Image " onClick="HjButton(this.form,jImage)" type="button">
+        </td>
+        <td align="center"><input value="     Center     " onClick="HjButton(this.form,jCenter)" type="button">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <b>AMPjive Document:</b><br>
+  <textarea name="TEXT" rows="16" cols="75" wrap="VIRTUAL"></textarea>
+  <br>
+  <input value="Erase and Restart Document" onClick="HjReset(this.form)" type="reset">
+</form>
+<p>Copyright 2015, 1996 Ray Daly, Vienna, VA</p>
+<p>Open sourced at <a href="https://github.com/raydaly/ampjive">https://github.com/raydaly/ampjive</a>
+</body>
+</html>
